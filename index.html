@@ -40,14 +40,14 @@ kbd{font-family:inherit;font-size:12px;background:var(--soft);border:1px solid v
 .builder .label{font-size:13px;color:var(--muted);margin:0 0 12px;width:100%}
 
 .sig{font-family:Arial,Helvetica,sans-serif;min-width:260px}
-.sig .f{display:block;font-family:Arial,Helvetica,sans-serif;color:#42B428;background:transparent;border:0;border-bottom:1px dashed #BFE3B4;padding:1px 0;margin:0;outline:0;max-width:100%;border-radius:0}
+.sig .f{display:block;height:21px;font-family:Arial,Helvetica,sans-serif;color:#42B428;background:transparent;border:0;border-bottom:1px dashed #BFE3B4;padding:0;margin:0;outline:0;max-width:100%;border-radius:0}
 .sig .f::placeholder{color:#42B428;opacity:.45}
 .sig .f:hover{border-bottom-color:#42B428}
 .sig .f:focus-visible{border-bottom:1px solid #42B428;background:#F3FAF0}
-.sig .name{font-size:15px;line-height:20px;font-weight:bold}
-.sig .small{font-size:13px;line-height:20px}
-.sig .gap{margin-top:2px}
-.sig .co{display:inline-block;margin-top:6px;font-size:13px;line-height:20px;font-weight:bold;color:#42B428;text-decoration:none}
+.sig .greet{font-size:13px;line-height:21px;color:#42B428;margin:0}
+.sig .name{font-size:15px;line-height:21px;font-weight:bold}
+.sig .small{font-size:13px;line-height:21px}
+.sig .co{display:inline-block;font-size:13px;line-height:21px;font-weight:bold;color:#42B428;text-decoration:none}
 .sig .rule{border-top:1px solid #42B428;width:260px;max-width:100%;margin:12px 0}
 .sig .logo{display:block;width:150px;height:44px}
 .sig .icons{display:flex;gap:10px;margin-top:8px;align-items:center}
@@ -114,9 +114,10 @@ button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
   <div class="builder">
     <p class="label">Ваш підпис. Клацніть на текст, щоб змінити</p>
     <div class="sig">
+      <p class="greet">З повагою,</p>
       <input class="f name" id="name" placeholder="Ім’я Прізвище" aria-label="Ім’я та прізвище" autocomplete="name">
       <input class="f small" id="title" placeholder="Посада" aria-label="Посада" autocomplete="organization-title">
-      <input class="f small gap" id="email" placeholder="name@tabletki.ua" aria-label="Email" inputmode="email" autocomplete="email">
+      <input class="f small" id="email" placeholder="name@tabletki.ua" aria-label="Email" inputmode="email" autocomplete="email">
       <input class="f small" id="phone" placeholder="+380 44 123 45 67" aria-label="Телефон" inputmode="tel" autocomplete="tel">
       <a class="co" href="https://tabletki.ua" target="_blank" rel="noopener">Tabletki.ua</a>
       <div class="rule"></div>
@@ -168,17 +169,20 @@ function detectBase(){
 const src = k => base ? base + FILES[k] : EMBED[k];
 
 // Styles repeat on every cell and link because Outlook drops inherited styles.
-const T = (size, bold) => `font-family:Arial,Helvetica,sans-serif;font-size:${size}px;line-height:${size+6}px;color:${GREEN};${bold?'font-weight:bold;':''}mso-line-height-rule:exactly;`;
+const LH = 21;
+const T = (size, bold) => `font-family:Arial,Helvetica,sans-serif;font-size:${size}px;line-height:${LH}px;color:${GREEN};${bold?'font-weight:bold;':''}mso-line-height-rule:exactly;`;
 const A = (href, text, size, bold) => `<a href="${esc(href)}" target="_blank" style="${T(size,bold)}text-decoration:none;"><span style="color:${GREEN};">${text}</span></a>`;
 
 function build(){
-  const v = Object.fromEntries(ids.map(i => [i, $(i).value.trim()]));
+  // Repeated spaces are collapsed so the gaps between words are always the same.
+  const v = Object.fromEntries(ids.map(i => [i, $(i).value.replace(/\s+/g,' ').trim()]));
   const rows = [];
+  rows.push(`<tr><td style="${T(13)}padding:0;">З повагою,</td></tr>`);
   rows.push(`<tr><td style="${T(15,true)}padding:0;">${esc(v.name || 'Ім’я Прізвище')}</td></tr>`);
-  if(v.title) rows.push(`<tr><td style="${T(13)}padding:0 0 4px 0;">${esc(v.title)}</td></tr>`);
+  if(v.title) rows.push(`<tr><td style="${T(13)}padding:0;">${esc(v.title)}</td></tr>`);
   if(v.email) rows.push(`<tr><td style="${T(13)}padding:0;">${A('mailto:'+v.email, esc(v.email), 13)}</td></tr>`);
   if(v.phone) rows.push(`<tr><td style="${T(13)}padding:0;">${A('tel:'+tel(v.phone), esc(v.phone), 13)}</td></tr>`);
-  rows.push(`<tr><td style="${T(13,true)}padding:6px 0 0 0;">${A(SITE, 'Tabletki.ua', 13, true)}</td></tr>`);
+  rows.push(`<tr><td style="${T(13,true)}padding:0;">${A(SITE, 'Tabletki.ua', 13, true)}</td></tr>`);
   rows.push(`<tr><td style="padding:12px 0 12px 0;"><table cellpadding="0" cellspacing="0" border="0" role="presentation" width="260" style="border-collapse:collapse;"><tr><td height="1" style="height:1px;line-height:1px;font-size:1px;border-top:1px solid ${GREEN};mso-line-height-rule:exactly;">&nbsp;</td></tr></table></td></tr>`);
   rows.push(`<tr><td style="padding:0 0 8px 0;"><a href="${SITE}" target="_blank"><img src="${esc(src('logo'))}" width="150" height="44" alt="Tabletki.ua" border="0" style="display:block;border:0;outline:none;width:150px;height:44px;"></a></td></tr>`);
   const icons = SOCIAL.map((s,i) => `<td valign="middle" style="padding:0 ${i < SOCIAL.length-1 ? '10px' : '0'} 0 0;"><a href="${s.href}" target="_blank"><img src="${esc(src(s.k))}" width="${s.w}" height="${s.h}" alt="${s.alt}" border="0" style="display:block;border:0;outline:none;width:${s.w}px;height:${s.h}px;"></a></td>`).join('');
@@ -249,6 +253,7 @@ async function copyCode(){
 $('copyRich').addEventListener('click', copyRich);
 $('copyCode').addEventListener('click', copyCode);
 ids.forEach(i => $(i).addEventListener('input', render));
+ids.forEach(i => $(i).addEventListener('blur', () => { $(i).value = $(i).value.replace(/\s+/g,' ').trim(); render(); }));
 restore(); render(); detectBase();
 </script>
 </body>
