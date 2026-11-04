@@ -5,7 +5,7 @@
 ## Як опублікувати на GitHub Pages
 
 1. Створіть публічний репозиторій (краще в акаунті компанії).
-2. Завантажте в корінь репозиторію всі файли з цього архіву: `index.html`, `logo.png`, `facebook.png`, `instagram.png`, `youtube.png`, `.nojekyll`.
+2. Завантажте в корінь репозиторію всі файли з цього архіву: `index.html`, `logo.png`, `globe.png`, `phone.png`, `facebook.png`, `instagram.png`, `youtube.png`, `.nojekyll`.
 3. Settings → Pages → Build and deployment → Source: **Deploy from a branch**, гілка `main`, папка `/ (root)` → Save.
 4. Через 1–2 хвилини сайт буде доступний за адресою `https://<акаунт>.github.io/<репозиторій>/`.
 
